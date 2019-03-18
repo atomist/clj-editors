@@ -1,0 +1,39 @@
+{
+  "name": "@atomist/clj-editors",
+  "main": "index.js",
+  "version": "0.6.0",
+  "description": "editor functions that use rewrite-clj and other important things from the clojurescript ecosystem",
+  "keywords": [
+    "editors"
+  ],
+  "license": "Apache-2.0",
+  "repository": "https://github.com/atomisthq/clj-editors",
+  "homepage": "https://github.com/atomisthq/clj-editors",
+  "author": {
+    "email": "slimslenderslacks@gmail.com"
+  },
+  "dependencies": {
+    "@cljs-oss/module-deps": "^1.1.1",
+    "semver": "^5.5.0",
+    "xml-js": "^1.6.7",
+    "yargs": "^12.0.1"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.2"
+  },
+  "bin": {
+    "sdm-vault": "./vault.js"
+  },
+  "scripts": {
+    "repl": "npm-run-all repl:install repl:socket-repl",
+    "compile": "lein cljsbuild once prod",
+    "watch-compile": "lein cljsbuild auto prod",
+    "clean": "lein clean",
+    "repl:install": "lein deps",
+    "repl:socket-repl": "lein trampoline run -m clojure.main dev/socket_repl.clj",
+    "repl:nrepl": "lein repl",
+    "test": "lein doo node unit-tests once",
+    "build": "npm-run-all compile test",
+    "sdm-vault": "./vault.js"
+  }
+}

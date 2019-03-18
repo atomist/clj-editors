@@ -1,0 +1,15 @@
+package-lock.json
+package/**
+node_modules
+.idea
+*.iml
+*.txt
+out
+target
+index.js
+unit-tests.js
+.cpcache
+.lein-*
+.cljs_node_repl
+.nrepl-port
+main.js
