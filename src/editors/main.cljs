@@ -63,7 +63,8 @@
 
 (defn ^:export hasLeinPlugin [f p]
   (-> (slurp f)
-      (core/has-plugin p)))
+      (core/has-plugin p)
+      (boolean)))
 (s/fdef hasLeinPlugin
         :args (s/cat :file string? :plugin string?))
 
