@@ -6,7 +6,6 @@ node_modules
 *.txt
 out
 target
-index.js
 unit-tests.js
 .cpcache
 .lein-*
