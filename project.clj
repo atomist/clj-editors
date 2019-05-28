@@ -52,6 +52,8 @@
                         :compiler {:output-to "unit-tests.js"
                                    :main editors.tests
                                    :target :nodejs
+                                   :foreign-libs [{:file "src/logger.js"
+                                                   :provides ["logger"]}]
                                    :optimizations :none}}]}
   :release-tasks [["syncnpm"]
                   ["vcs" "commit"]
