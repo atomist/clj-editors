@@ -2,10 +2,10 @@
   (:require [goog.string :as gstring]
             [goog.string.format]
             [cljs.pprint]
-            #_[logger]))
+            [logger]))
 
-#_(def logger (.-logger (js/automationClient)))
-(def logger js/console)
+(def logger (.-logger (js/automationClient)))
+#_(def logger js/console)
 
 (defn- log [& args]
   (try
