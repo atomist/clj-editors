@@ -33,6 +33,8 @@ export declare interface VoteResults {
 export declare interface DiffData { from: any[], to: any[] }
 export declare interface Diff { from: FP, to: FP, data: DiffData, owner: string, repo: string, sha: string, providerId: string, channel: string, branch: string }
 
+// -------------------------------------------------------------------------
+
 export declare function voteResults(votes: Vote[]): VoteResults;
 
 export declare function checkFingerprintTargets(
@@ -55,7 +57,6 @@ export declare function depsFingerprints(f1: string): Promise<FP[]>
 export declare function logbackFingerprints(f1: string): Promise<FP[]>
 export declare function cljFunctionFingerprints(f1: string): Promise<FP[]>
 export declare function mavenFingerprints(f1: string): Promise<FP[]>
-
 export declare function applyFingerprint(f1: string, fp: FP): Promise<any>
 
 /**
@@ -67,4 +68,4 @@ export declare function renderData(x: any): string
 export declare function commaSeparatedList(x: any): string
 export declare function sha256(data: string): string
 export declare function consistentHash(data: any): string
-export declare function renderClojureProjectDiff(diff: Diff, target: FP): { title: "string", description: string }
+export declare function renderProjectLibDiff(diff: Diff, target: FP): { title: "string", description: string }

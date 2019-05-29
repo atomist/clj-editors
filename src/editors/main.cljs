@@ -13,6 +13,7 @@
             [atomist.goals :as goals]
             [atomist.promise :as promise]
             [atomist.logback :as logback]
+            [hasch.core :as hasch]
             [atomist.fingerprints :as fingerprints]
             [atomist.public-defns :as public-defns]
             [atomist.lein :as lein]))
@@ -136,16 +137,21 @@
 ;; ------------------------------
 
 (defn ^:export depsFingerprints
-  "maven.cljs and leiningen dependencies"
+  "run fingerprints on pom.xml and project.clj files
+    if project.clj -> lein.clj creates clojure-project-deps and clojure-project-coordinates
+    if pom.xml -> maven.clj creates maven-project-deps and maven-project-coordinates"
   [s]
   (fingerprints/fingerprint s))
 
-(defn ^:export logbackFingerprints [s]
+(defn ^:export logbackFingerprints
+  "generate elk-logback fingerprint"
+  [s]
   (logback/fingerprint s))
 
-(defn ^:export cljFunctionFingerprints [s]
+(defn ^:export cljFunctionFingerprints
+  "generate public-defn-bodies fingerprints"
+  [s]
   (public-defns/fingerprint s))
-
 
 (defn ^:export applyFingerprint
   "apply maven.cljs, leiningen dep fingerprints, public defn bodies, and logback fingerprints
@@ -194,7 +200,7 @@
     (with-out-str
      (pprint event))))
 
-(defn ^:export renderClojureProjectDiff [diff, target]
+(defn ^:export renderProjectLibDiff [diff, target]
   (let [{:as d} (js->clj diff :keywordize-keys true)
         {:as t} (js->clj target :keywordize-keys true)]
     (clj->js
