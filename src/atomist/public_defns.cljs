@@ -119,7 +119,7 @@
        (take-while (complement m/end?))
        (filter (is-sym 'defn))
        (filter start-of-list?)
-       (filter fingerprint-metadata?)
+       #_(filter fingerprint-metadata?)
        (map (partial public-sig clj-path))
        (filter identity)))
 
