@@ -12,7 +12,7 @@ export declare function hasLeinPlugin( f: string, symbol: string): boolean
 
 // -----------------------------------------------------------------------
 
-export declare interface FP { name: string, sha: string, data: any, version: string, abbreviation: string }
+export declare interface FP { type?: string, name: string, sha: string, data: any, version?: string, abbreviation?: string }
 export declare interface Vote {
     ballot?: any,
     abstain: boolean,

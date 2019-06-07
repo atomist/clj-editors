@@ -72,7 +72,8 @@
 (defn run [f]
   (-> []
       (concat (for [dep (project-dependencies f)]
-                {:name (gstring/format "clojure-project-deps::%s" (gstring/replaceAll (nth dep 0) "/" "::"))
+                {:type "clojure-project-deps"
+                 :name (gstring/replaceAll (nth dep 0) "/" "::")
                  :data (into [] (take 2 dep))
                  :abbreviation "lein-deps"
                  :version "0.0.1"}))

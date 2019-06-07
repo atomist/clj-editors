@@ -284,7 +284,8 @@
                         (into []))]
           (-> []
               (concat (for [dep data]
-                        {:name (gstring/format "maven-project-deps::%s" (gstring/replaceAll (nth dep 0) "/" "::"))
+                        {:type "maven-project-deps"
+                         :name (gstring/replaceAll (nth dep 0) "/" "::")
                          :data (into [] (take 2 dep))
                          :abbreviation "maven-deps"
                          :version "0.0.1"}))

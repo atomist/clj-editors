@@ -22,26 +22,6 @@
     (if (.exists file)
       (f file))))
 
-(defn- file-type [f]
-  (cond
-    (= (.getName f) "project.clj") :lein
-    (= (.getName f) "pom.xml") :pom
-    :else :unknown))
-
-(defn- add-fingerprint [fp-name]
-  (fn [x] (conj (into [] x) fp-name)))
-
-(defn get-deps
-  "returns ::deps"
-  [basedir]
-  (->> (concat
-        (map (add-fingerprint "clojure-project-deps") (get-file basedir "project.clj" lein/project-dependencies))
-        (map (add-fingerprint "maven.cljs-project-deps") (get-file basedir "pom.xml" maven/project-dependencies)))
-       (into [])))
-(spec/fdef get-deps
-           :args (spec/cat :basedir string?)
-           :ret ::schema/deps)
-
 (defn fingerprint
   "extract library fingerprint data from a basedir containing some sort of project manifest and possibly
    a project lock file (depending on the system)

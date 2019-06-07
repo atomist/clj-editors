@@ -3,6 +3,7 @@
 
 (spec/def ::file any?)
 (spec/def ::name string?)
+(spec/def ::type string?)
 (spec/def ::version string?)
 (spec/def ::abbreviation string?)
 (spec/def ::sha string?)
@@ -14,7 +15,7 @@
 (spec/def ::deps (spec/coll-of ::lib-spec))
 
 (spec/def :fp/data any?)
-(spec/def ::fp (spec/keys :req-un [::name :fp/data]
+(spec/def ::fp (spec/keys :req-un [::name :fp/data ::type]
                           :opt-un [::abbreviation ::sha ::version]))
 (spec/def ::fingerprints (spec/coll-of ::fp))
 

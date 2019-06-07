@@ -163,7 +163,8 @@
     (->>
      (for [dufn (all-defns f) :when (:fn-name dufn)]
        (try
-         {:name (gstring/format "public-defn-bodies-%s" (:fn-name dufn))
+         {:type "public-defn-bodies"
+          :name (:fn-name dufn)
           :sha (sha (:bodies dufn))
           :version "0.0.5"
           :abbreviation "defn-bodies"
