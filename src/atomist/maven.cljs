@@ -257,12 +257,12 @@
   (log/info "maven edit" basedir n v))
 
 (defn apply-fingerprint
-  [pom-file {:keys [name] [lib-name lib-version] :data}]
+  [pom-file {:keys [name type] [lib-name lib-version] :data}]
   (log/infof "apply %s@%s to %s" lib-name lib-version pom-file)
   (let [pom-xml (io/file pom-file)
         gav (assoc (->group-artifact lib-name) :version lib-version)]
     (when (and
-           (string/starts-with? name "maven-project-deps")
+           (string/starts-with? type "maven-project-deps")
            (.exists pom-xml))
       (-> (xml->clj pom-xml)
           (update-parent-version gav)
@@ -270,6 +270,35 @@
           (update-dependency-management gav)
           (clj->xml)
           (->> (spit pom-xml))))))
+
+(defn coordinates [pom-xml]
+  (let [pom (xml->clj pom-xml)
+        coords (identity pom)]
+    [{:name "maven-project-coordinates"
+      :data {:name (str (:groupId coords) "/" (:artifactId coords))
+             :version (:version coords)}
+      :abbreviation "coords"
+      :version "0.0.1"}]))
+(spec/fdef coordinates
+           :args (spec/cat :file ::schema/file)
+           :ret ::schema/fingerprints)
+
+(defn deps [pom-xml]
+  (let [pom (xml->clj pom-xml)
+        data (->> (dependencies pom)
+                  (concat (dependency-management pom))
+                  (cons (parent-identity pom))
+                  (into []))]
+    (->> (for [dep data]
+           {:type "maven-project-deps"
+            :name (gstring/replaceAll (nth dep 0) "/" "::")
+            :data (into [] (take 2 dep))
+            :abbreviation "maven-deps"
+            :version "0.0.1"})
+         (into []))))
+(spec/fdef deps
+           :args (spec/cat :file ::schema/file)
+           :ret ::schema/fingerprints)
 
 (defn run [f]
   (try

@@ -69,20 +69,20 @@
       (nth 1)
       (str)))
 
-(defn run [f]
-  (-> []
-      (concat (for [dep (project-dependencies f)]
-                {:type "clojure-project-deps"
-                 :name (gstring/replaceAll (nth dep 0) "/" "::")
-                 :data (into [] (take 2 dep))
-                 :abbreviation "lein-deps"
-                 :version "0.0.1"}))
-      (conj {:name "clojure-project-coordinates"
-             :data {:name (get-name f)
-                    :version (get-version f)}
-             :abbreviation "coords"
-             :version "0.0.1"})))
-(spec/fdef run
-           :args (spec/cat :file ::schema/file)
-           :ret ::schema/fingerprints)
+(defn deps [f]
+  (->> (for [dep (project-dependencies f)]
+         {:type "clojure-project-deps"
+          :name (gstring/replaceAll (nth dep 0) "/" "::")
+          :data (into [] (take 2 dep))
+          :abbreviation "lein-deps"
+          :version "0.0.1"})
+       (into [])))
+
+(defn coordinates [f]
+  [{:name "clojure-project-coordinates"
+    :data {:name (get-name f)
+           :version (get-version f)}
+    :abbreviation "coords"
+    :version "0.0.1"}])
+
 

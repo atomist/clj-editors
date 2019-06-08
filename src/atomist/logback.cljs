@@ -8,8 +8,10 @@
             [atomist.cljs-log :as log]
             [cljs.test :refer-macros [deftest testing is run-tests async are] :refer [report testing-vars-str empty-env get-current-env]]
             [cljs.spec.alpha :as spec]
+            [goog.string :as gstring]
+            [goog.string.format]
             [atomist.specs :as schema]
-            [atomist.lein :as fingerprint]))
+            [atomist.lein :as lein]))
 
 (defn xml->clj [f]
   (-> (.xml2json xml-js (slurp f))
@@ -103,19 +105,19 @@
            [{:name "elk-logback"
              :version "0.0.1"
              :abbreviation "elk-logback"
-             :sha (fingerprint/sha-256 json-data)
+             :sha (lein/sha-256 json-data)
              :data json-data
              :value json-data}])))
        (catch js/Error ex
-         (log/error "unable to generate elk-logback fingerprint" (.-name ex) (.-message ex))
+         (log/error (gstring/format "unable to generate elk-logback fingerprint %s -> %s" (.-name ex) (.-message ex)))
          (accept (clj->js [])))))))
 (spec/fdef insert-elk-appender :args (spec/cat :dir string?))
 
 (defn apply-fingerprint
   "apply fingerprint
     called from atomist.main/apply-fingerprint - should complete synchronously without a Promise"
-  [basedir {:keys [data name]}]
-  (if (= "elk-logback" name)
+  [basedir {:keys [data type]}]
+  (if (= "elk-logback" type)
     (try
       (insert-elk-appender basedir data)
       "completed successfully"

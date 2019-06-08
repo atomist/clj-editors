@@ -16,7 +16,9 @@
             [hasch.core :as hasch]
             [atomist.fingerprints :as fingerprints]
             [atomist.public-defns :as public-defns]
-            [atomist.lein :as lein]))
+            [atomist.lein :as lein]
+            [atomist.maven :as maven]
+            [atomist.json :as json]))
 
 (defn edit-file [f editor & args]
   (spit f (apply editor (slurp f) args)))
@@ -131,17 +133,46 @@
                                 (filter #(= "Against" (:decision %)))
                                 (into []))})))
 
+(defn ^:export partitionByFeature
+  [fps callback]
+  (let [partitioned (->> (js->clj fps :keywordize-keys true)
+                         (map (fn [fp] (assoc fp
+                                         :type (or (:type fp) (:name fp))
+                                         :data (json/json-str (:data fp)))))
+                         (sort-by :type)
+                         (partition-by :type)
+                         (map (fn [fp-coll] {:type (-> fp-coll first :type)
+                                             :additions (into [] fp-coll)}))
+                         (into []))]
+    (log/info (with-out-str (pprint partitioned)))
+    (js/Promise.
+     (fn [resolve reject]
+       (try
+         (resolve (callback (clj->js partitioned)))
+         (catch :default t
+           (log/error "Error sending partitioned FPs " (str t))
+           (reject t)))))))
+
 (defn ^:export sha256 [s]
   (clj->js (lein/sha-256 (js->clj s))))
 
 ;; ------------------------------
 
-(defn ^:export depsFingerprints
-  "run fingerprints on pom.xml and project.clj files
-    if project.clj -> lein.clj creates clojure-project-deps and clojure-project-coordinates
-    if pom.xml -> maven.clj creates maven-project-deps and maven-project-coordinates"
+(defn ^:export mavenCoordinates
   [s]
-  (fingerprints/fingerprint s))
+  (fingerprints/fingerprint s "pom.xml" maven/coordinates))
+
+(defn ^:export mavenDeps
+  [s]
+  (fingerprints/fingerprint s "pom.xml" maven/deps))
+
+(defn ^:export leinCoordinates
+  [s]
+  (fingerprints/fingerprint s "project.clj" lein/coordinates))
+
+(defn ^:export leinDeps
+  [s]
+  (fingerprints/fingerprint s "project.clj" lein/deps))
 
 (defn ^:export logbackFingerprints
   "generate elk-logback fingerprint"
@@ -160,7 +191,7 @@
   (promise/chan->promise
    (go
     (let [clj-fp (js->clj fp :keywordize-keys true)]
-      ( log/info "apply fingerprint " clj-fp " to basedir " basedir)
+      (log/info "apply fingerprint " clj-fp " to basedir " basedir)
       ;; currently sync functions but they should probably return channels
       (fingerprints/apply-fingerprint basedir clj-fp)
       (logback/apply-fingerprint basedir clj-fp))

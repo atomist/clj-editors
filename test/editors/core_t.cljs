@@ -1,5 +1,5 @@
 (ns editors.core-t
-  (:require [cljs.test :refer-macros [deftest testing is run-tests]]
+  (:require [cljs.test :refer-macros [deftest testing is run-tests async]]
             [editors.core :as core]
             [cljs-node-io.core :as io :refer [slurp spit]]
             [cljs.pprint :refer [pprint]]))

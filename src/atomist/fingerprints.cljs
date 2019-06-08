@@ -27,13 +27,11 @@
    a project lock file (depending on the system)
 
    returns promise of javascript Fingerprint[] or error "
-  [basedir]
+  [basedir f fingerprinter]
   (js/Promise.
    (fn [accept reject]
      (accept
-      (let [data (concat
-                  (get-file basedir "pom.xml" maven/run)
-                  (get-file basedir "project.clj" lein/run))]
+      (let [data (get-file basedir f fingerprinter)]
         (->> data
              (map #(assoc %
                      :sha (lein/sha-256 (json/json-str (:data %)))
@@ -44,7 +42,7 @@
 
 (defn apply-fingerprint
   "runs synchronously right now"
-  [basedir {:keys [name] :as fingerprint}]
+  [basedir {:keys [type] :as fingerprint}]
 
   (get-file
    basedir "pom.xml"
@@ -54,8 +52,8 @@
    basedir "project.clj"
    (fn [f]
      (cond
-       (gstring/startsWith (:name fingerprint) "clojure-project-deps")
+       (= "clojure-project-deps" type)
        (spit f (lein/edit-library (slurp f) (-> fingerprint :data (nth 0)) (-> fingerprint :data (nth 1)))))))
 
-  (if (gstring/startsWith name "public-defn-bodies")
+  (if (= "public-defn-bodies" type)
     (public-defns/apply-fingerprint basedir fingerprint)))

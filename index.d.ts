@@ -50,13 +50,21 @@ export declare function broadcastFingerprint(
     callback: (owner: string, repo: string, channel: string) => Promise<any>
 ): Promise<any>
 
+export declare function partitionByFeature(
+    fps: FP[],
+    callback: (partitioned: {type: string, additions: {name: string, sha: string, data: string}[]}[]) => Promise<any>
+): Promise<any>
+
 /**
  * Clojure fingerprint computations and editors
  */
-export declare function depsFingerprints(f1: string): Promise<FP[]>
+export declare function mavenDeps(f1: string): Promise<FP[]>
+export declare function mavenCoordinates(f1: string): Promise<FP[]>
+export declare function leinDeps(f1: string): Promise<FP[]>
+export declare function leinCoordinates(f1: string): Promise<FP[]>
 export declare function logbackFingerprints(f1: string): Promise<FP[]>
 export declare function cljFunctionFingerprints(f1: string): Promise<FP[]>
-export declare function mavenFingerprints(f1: string): Promise<FP[]>
+
 export declare function applyFingerprint(f1: string, fp: FP): Promise<any>
 
 /**
