@@ -5,7 +5,6 @@
             [logger]))
 
 (def logger (.-logger (js/automationClient)))
-#_(def logger js/console)
 
 (defn- log [& args]
   (try
