@@ -225,7 +225,7 @@
                           #(conj % data))))))
 
 #_(comment
-   (pprint (jfrog-artifactory (xml->clj "test-resources/jfrog-pom/pom.xml")))
+   (pprint (jfrog-artifactory (xml->clj "test-resources/jfrog-pom/pom0.xml")))
    (pprint (jfrog-artifactory (xml->clj "test-resources/jfrog-pom/pom1.xml")))
    (->
     (apply-fingerprint "test-resources/jfrog-pom/pom2.xml"
@@ -354,7 +354,7 @@
          {:type "element",
           :name "scope",
           :elements [{:type "text", :text "import"}]}]}]
-      (-> (xml->clj "test-resources/maven/pom.xml")
+      (-> (xml->clj "test-resources/maven/pom0.xml")
           (update-dependency-management {:groupId "com.amazonaws"
                                          :artifactId "aws-java-sdk-bom"
                                          :version "1.2.3"})
@@ -377,7 +377,7 @@
          {:type "element",
           :name "version",
           :elements [{:type "text", :text "1.2.3"}]}]}]
-      (-> (xml->clj "test-resources/maven/pom.xml")
+      (-> (xml->clj "test-resources/maven/pom0.xml")
           (update-dependencies {:groupId "com.dealer.webplatform"
                                 :artifactId "jvms-spring-boot-starter"
                                 :version "1.2.3"})
@@ -387,7 +387,7 @@
   (testing "that parent pom can be updated by a fingerprint"
     (is
      (=
-      (-> (xml->clj "test-resources/maven/pom.xml")
+      (-> (xml->clj "test-resources/maven/pom0.xml")
           (update-parent-version {:groupId "org.springframework.boot"
                                   :artifactId "spring-boot-starter-parent"
                                   :version "1.2.3"})
@@ -396,7 +396,7 @@
   (testing "that we skip parent pom if the fingerprint is a different group or artifact"
     (is
      (=
-      (-> (xml->clj "test-resources/maven/pom.xml")
+      (-> (xml->clj "test-resources/maven/pom0.xml")
           (update-parent-version {:groupId "org.springframework.boot1"
                                   :artifactId "spring-boot-starter-parent"
                                   :version "1.2.3"})
