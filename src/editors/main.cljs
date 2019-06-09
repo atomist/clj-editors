@@ -1,4 +1,5 @@
 (ns editors.main
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [editors.core :as core]
             [cljs-node-io.core :as io :refer [slurp spit]]
             [cljs.analyzer :as cljs]
@@ -18,7 +19,9 @@
             [atomist.public-defns :as public-defns]
             [atomist.lein :as lein]
             [atomist.maven :as maven]
-            [atomist.json :as json]))
+            [atomist.json :as json]
+            [atomist.cljs-log :as log]
+            [cljs.core.async :refer [chan <! >! close!]]))
 
 (defn edit-file [f editor & args]
   (spit f (apply editor (slurp f) args)))
@@ -134,7 +137,7 @@
                                 (into []))})))
 
 (defn ^:export partitionByFeature
-  [fps callback]
+  [fps async-callback]
   (let [partitioned (->> (js->clj fps :keywordize-keys true)
                          (map (fn [fp] (assoc fp
                                          :type (or (:type fp) (:name fp))
@@ -145,13 +148,10 @@
                                              :additions (into [] fp-coll)}))
                          (into []))]
     (log/info (with-out-str (pprint partitioned)))
-    (js/Promise.
-     (fn [resolve reject]
-       (try
-         (resolve (callback (clj->js partitioned)))
-         (catch :default t
-           (log/error "Error sending partitioned FPs " (str t))
-           (reject t)))))))
+    (promise/chan->promise
+     (go
+      (<! (promise/from-promise
+           (async-callback (clj->js partitioned))))))))
 
 (defn ^:export sha256 [s]
   (clj->js (lein/sha-256 (js->clj s))))

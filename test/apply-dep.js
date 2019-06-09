@@ -3,7 +3,7 @@ var clj = editors.editors.main;
 
 console.log(`check ${process.argv[2]}`)
 
-clj.applyFingerprint(
+return clj.applyFingerprint(
     process.argv[2],
     {
         type: "clojure-project-deps",
