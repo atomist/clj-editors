@@ -28,9 +28,9 @@
 
    returns channel with result
      but the complete-callback might complete the outside promise chain and should be the last thing called"
-  [graph-promise {fp-name :name fp-sha :sha} callback]
+  [graph-promise {fp-name :name fp-type :type fp-sha :sha} callback]
   (go
-   (let [graph-data (<! (from-promise (graph-promise fp-name)))
+   (let [graph-data (<! (from-promise (graph-promise (or fp-type fp-name) fp-name)))
          owner-name-channels
          (->>
           (for [repo graph-data]
@@ -40,7 +40,9 @@
                                        first
                                        :commit
                                        :analysis
-                                       (filter #(= fp-name (:name %)))
+                                       (filter #(and
+                                                 (= (:name %) fp-name)
+                                                 (= (:type %) (or fp-type fp-name))))
                                        first
                                        :sha)]
               (if (and fingerprint-sha (= fp-sha fingerprint-sha))
@@ -61,12 +63,15 @@
 ;; fingerprint goals
 ;;----------------------------
 
+(defn target-name [{:keys [name type]}]
+  (gstring/format "%s::%s" (or type name) name))
+
 (defn- get-fp-from-preferences
   "ChatTeam preferences may contain a fingerprint goal"
-  [preferences fp-name]
+  [preferences fp]
   (some-> preferences
           :TeamConfiguration
-          (->> (filter #(= fp-name (:name %))))
+          (->> (filter #(= (target-name fp) (:name %))))
           first
           :value
           (json/json->clj :keywordize-keys true)))
@@ -78,7 +83,7 @@
   [query-prefs send-message confirm-goal {:keys [owner repo] fingerprint :to}]
   (go
    (let [preferences (<! (from-promise (query-prefs)))
-         fp-goal (get-fp-from-preferences preferences (:name fingerprint))]
+         fp-goal (get-fp-from-preferences preferences fingerprint)]
      (if (and
           fp-goal
           (not
