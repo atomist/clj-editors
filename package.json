@@ -1,7 +1,7 @@
 {
   "name": "@atomist/clj-editors",
   "main": "index.js",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "editor functions that use rewrite-clj and other important things from the clojurescript ecosystem",
   "keywords": [
     "editors"
