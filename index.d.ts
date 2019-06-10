@@ -46,7 +46,7 @@ export declare function checkFingerprintTargets(
 
 export declare function broadcastFingerprint(
     queryFingerprints: (type: string, name: string) => Promise<any>,
-    fingerprint: { name: string, version: string, sha: string },
+    fingerprint: { name: string, type: string, sha: string },
     callback: (owner: string, repo: string, channel: string) => Promise<any>
 ): Promise<any>
 
