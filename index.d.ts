@@ -7,6 +7,7 @@ export declare function getName( f: string): string
 export declare function projectDeps( f: string): void
 export declare function cljfmt(f: string): Promise<any>
 export declare function updateProjectDep( f: string, libname: string, version: string): void
+export declare function rmProjectDep( f: string, libname: string): void
 export declare function vault( key: string, f: string): Map<string,string>
 export declare function hasLeinPlugin( f: string, symbol: string): boolean
 
@@ -14,7 +15,6 @@ export declare function hasLeinPlugin( f: string, symbol: string): boolean
 
 export declare interface FP { type?: string, name: string, sha: string, data: any, version?: string, abbreviation?: string }
 export declare interface Vote {
-    ballot?: any,
     abstain: boolean,
     decision?: string,
     name?: string,
@@ -26,8 +26,6 @@ export declare interface Vote {
 }
 export declare interface VoteResults {
     failed: boolean,
-    failedFps: string[],
-    successFps: string[],
     failedVotes: Vote[],
 }
 export declare interface DiffData { from: any[], to: any[] }

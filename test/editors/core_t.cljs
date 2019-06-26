@@ -28,3 +28,16 @@
 (deftest plugin-check-tests
   (testing "that we can can check for a plugin being present"
     (is (core/has-plugin (slurp "test-resources/org-project.clj") "com.livingsocial/lein-dependency-check"))))
+
+(deftest remove-library-tests
+  (testing "removing nothing"
+    (is (=
+         (core/remove-library (slurp "test-resources/lein/project1.clj") "core/whateve")
+         (slurp "test-resources/lein/project1.clj"))))
+  (testing "removals"
+    (is (=
+         (core/remove-library (slurp "test-resources/lein/project1.clj") "cljs-node-io")
+         "(defproject atomist/test \"1.1\"\n            :dependencies [[core/whatever \"1.0\"]])"))
+    (is (=
+         (core/remove-library (slurp "test-resources/lein/project1.clj") "core/whatever")
+         "(defproject atomist/test \"1.1\"\n            :dependencies [[cljs-node-io \"0.5.0\"]])"))))

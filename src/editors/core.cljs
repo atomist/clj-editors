@@ -51,6 +51,18 @@
       (z/edit (constantly library-version))
       (z/root-string)))
 
+(defn remove-library [s library-name]
+  (if-let [found-loc (-> s
+                         (z/of-string)
+                         z/down
+                         (z/find-next-value :dependencies)
+                         (z/find z/next #(if-let [s (z/sexpr %)]
+                                           (and (symbol? s)
+                                                (= library-name (str s)))))
+                         (z/up))]
+    (z/root-string (z/remove found-loc))
+    s))
+
 (defn has-plugin [s plugin-symbol-name]
   (let [[_ ns-name sym-name] (re-find #"(.*)/(.*)" plugin-symbol-name)]
     (->> s

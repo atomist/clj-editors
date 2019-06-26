@@ -89,6 +89,9 @@
 (defn ^:export updateProjectDep [f libname version]
   (edit-file f core/edit-library libname version))
 
+(defn ^:export rmProjectDep [f libname]
+  (edit-file f core/remove-library libname))
+
 (defn ^:export readVault [f1 f2]
   (clj->js
    (encrypt/read-vault f1 f2)))
