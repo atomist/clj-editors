@@ -2,7 +2,9 @@
   (:require [cljs.test :refer-macros [deftest testing is run-tests async]]
             [editors.core :as core]
             [cljs-node-io.core :as io :refer [slurp spit]]
-            [cljs.pprint :refer [pprint]]))
+            [cljs.pprint :refer [pprint]]
+            [atomist.lein :as lein]
+            [rewrite-clj.zip :as z]))
 
 (deftest version-tests
   (testing "that we can extract the version from a project clj file"
@@ -41,3 +43,24 @@
     (is (=
          (core/remove-library (slurp "test-resources/lein/project1.clj") "core/whatever")
          "(defproject atomist/test \"1.1\"\n            :dependencies [[cljs-node-io \"0.5.0\"]])"))))
+
+(deftest edit-library-tests
+  (testing "that we don't alter excludes"
+    (let [s (lein/edit-library (slurp "test-resources/lein/org-project.clj") "com.fasterxml.jackson.core/jackson-databind" "2.9.9.1")
+          deps (lein/lein-deps s)]
+      (is (some #(= % '("com.fasterxml.jackson.core/jackson-databind" "2.9.9.1"
+                        :exclusions
+                        [com.fasterxml.jackson.core/jackson-core])) deps))
+      (is (some #(= % '("com.atomist/kafka-lib"
+                        "6.0.37"
+                        :exclusions
+                        [org.clojure/clojure
+                         org.slf4j/slf4j-log4j12
+                         com.fasterxml.jackson.core/jackson-databind
+                         org.clojure/tools.reader])) deps))))
+  (testing "that we alter a simple lib"
+    (let [s (lein/edit-library (slurp "test-resources/project2.clj")
+                               "org.clojure/clojure" "1.10.0")
+          deps (lein/lein-deps s)]
+      (is (= 4 (count deps)))
+      (is (some #(= % '("org.clojure/clojure" "1.10.0")) deps)))))

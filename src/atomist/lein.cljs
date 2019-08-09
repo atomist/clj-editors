@@ -20,7 +20,8 @@
       (z/find-next-value :dependencies)
       (z/find z/next #(if-let [s (z/sexpr %)]
                         (and (symbol? s)
-                             (= library-name (str s)))))
+                             (= library-name (str s))
+                             (= :vector (-> % z/prev z/node :tag)))))
       (z/right)
       (z/edit (constantly library-version))
       (z/root-string)))
@@ -48,13 +49,16 @@
        (z/find-next-value :dependencies)
        z/right)))
 
-(defn project-dependencies [f]
-  (->> (slurp f)
+(defn lein-deps [s]
+  (->> s
        (z/of-string)
        dependencies
        (z/sexpr)
        (sort-by (comp name first))
        (map #(conj (rest %) (str (first %))))))
+
+(defn project-dependencies [f]
+  (lein-deps (slurp f)))
 
 (defn get-version [f]
   (-> f
