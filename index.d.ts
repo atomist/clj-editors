@@ -13,7 +13,7 @@ export declare function hasLeinPlugin( f: string, symbol: string): boolean
 
 // -----------------------------------------------------------------------
 
-export declare interface Fingerprint { type?: string, name: string, sha: string, data: any, version?: string, abbreviation?: string }
+export declare interface Fingerprint { type: string, name: string, sha: string, data: any, version?: string, abbreviation?: string }
 export declare interface FromTo { from: any[], to: any[] }
 export declare interface DiffData { from?: Fingerprint, to: Fingerprint, data: FromTo, owner: string, repo: string, sha: string, providerId: string, channel: string, branch: string }
 
